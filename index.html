@@ -147,43 +147,52 @@
         </div>
     </div>
 
-    <!-- ================= JAVASCRIPT & FIREBASE ================= -->
-    <script type="module">
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+  <!-- ================= JAVASCRIPT & FIREBASE ================= -->
+<script type="module">
+    // 1. IMPORT FIREBASE MENGGUNAKAN CDN (Wajib untuk Plain HTML)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+    
+    // Import Auth dan Firestore yang dibutuhkan untuk fitur datacenter Anda
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyCqDdj5gTLPrFd-yYhDUJ__w8w-5ZOxk_M",
-  authDomain: "amdfdatacenter.firebaseapp.com",
-  projectId: "amdfdatacenter",
-  storageBucket: "amdfdatacenter.firebasestorage.app",
-  messagingSenderId: "484525213430",
-  appId: "1:484525213430:web:d7aff2639a8fd26cd28ed7",
-  measurementId: "G-Q30G094058"
-};
+    // 2. CONFIG FIREBASE ANDA
+    const firebaseConfig = {
+        apiKey: "AIzaSyCqDdj5gTLPrFd-yYhDUJ__w8w-5ZOxk_M",
+        authDomain: "amdfdatacenter.firebaseapp.com",
+        projectId: "amdfdatacenter",
+        storageBucket: "amdfdatacenter.firebasestorage.app",
+        messagingSenderId: "484525213430",
+        appId: "1:484525213430:web:d7aff2639a8fd26cd28ed7",
+        measurementId: "G-Q30G094058"
+    };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-        // Referensi UI
-        const preloader = document.getElementById('preloader');
-        const loginSection = document.getElementById('login-section');
-        const dashboardSection = document.getElementById('dashboard-section');
-        const fileGallery = document.getElementById('file-gallery');
-        let currentUser = null;
-        let unsubscribeRealtime = null;
+    // 3. INITIALIZE FIREBASE & LAYANANNYA
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const auth = getAuth(app); // Wajib diinisialisasi untuk login
+    const db = getFirestore(app); // Wajib diinisialisasi untuk upload file
 
-        // 3. LOGIC PRELOADER 5 DETIK
-        setTimeout(() => {
-            preloader.style.opacity = '0';
-            setTimeout(() => { preloader.style.display = 'none'; }, 1000);
-            checkAuthStatus(); // Cek status login setelah preloader selesai
-        }, 5000);
+    // 4. REFERENSI UI & LOGIC
+    const preloader = document.getElementById('preloader');
+    const loginSection = document.getElementById('login-section');
+    const dashboardSection = document.getElementById('dashboard-section');
+    const fileGallery = document.getElementById('file-gallery');
+    
+    let currentUser = null;
+    let unsubscribeRealtime = null;
+
+    // LOGIC PRELOADER 5 DETIK
+    setTimeout(() => {
+        preloader.style.opacity = '0';
+        setTimeout(() => { preloader.style.display = 'none'; }, 1000);
+        
+        // Panggil fungsi cek status login (pastikan fungsi checkAuthStatus() sudah ada di kode Anda selanjutnya)
+        if (typeof checkAuthStatus === "function") {
+            checkAuthStatus(); 
+        }
+    }, 3000);
 
         // 4. ANIMASI GALAXY BACKGROUND (Canvas merespon kursor)
         const canvas = document.getElementById('galaxy-canvas');
